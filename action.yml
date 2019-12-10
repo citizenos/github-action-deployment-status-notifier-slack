@@ -1,0 +1,13 @@
+name: 'Deployment notifications to Slack'
+description: 'Send deployment event notifications to slack'
+inputs:
+  slack-incoming-webhook-url:
+    description: 'Slack incoming webhook url to post the notifications. Read more - https://api.slack.com/messaging/webhooks'
+    required: true
+  states:
+    description: 'Comma separated list of deployment states that trigger the Slack notifications'
+    required: true
+    default: 'pending, success, failure, error'
+runs:
+  using: 'node12'
+  main: 'index.js'

@@ -1,0 +1,11 @@
+# Created by .ignore support plugin (hsz.mobi)
+*.sublime-project
+*.sublime-workspace
+*.iws
+*.ipr
+*.iml
+*.swp
+/.idea/*
+logs
+*.log
+npm-debug.log*
