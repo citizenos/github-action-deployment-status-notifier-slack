@@ -6,19 +6,14 @@ const superagent = require('superagent');
 
 core.debug(`GitHub Deployment Status Notifier Slack - Context ${context}`);
 
-const envOwner = context.repo.owner;
-const envRepo = context.repo.repo;
-
-const eventPayload = context.payload;
-const confStates = core.getInput('states'); // Comma separated list of deployment states that trigger the Slack notifications. For ex: pending, success, failure, error
+const payload = context.payload;
 const confSlackIncomingWebhookUrl = core.getInput('slack-incoming-webhook-url');
 
-if (!eventPayload) {
-    throw new Error('INVALID CONFIGURATION: Invalid event type configuration, event payload must contain "pull_request" property. See: https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#pull-request-event-pull_request');
+if (!context.eventName !== 'deployment_status') {
+    throw new Error('INVALID CONFIGURATION: Invalid event type configuration, event must be "deployment_status". See: https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#deployment-status-event-deployment_status');
 }
 
-core.info(`GitHub Deployment Status Notifier Slack - event context ${JSON.stringify(context, null, 2)}`);
-core.info(`GitHub Deployment Status Notifier Slack - event payload ${JSON.stringify(eventPayload, null, 2)}`);
+core.debug(`GitHub Deployment Status Notifier Slack - event context ${JSON.stringify(context, null, 2)}`);
 
 const sendSlackMessage = async (message) => {
     return await superagent
@@ -28,14 +23,44 @@ const sendSlackMessage = async (message) => {
 
 const runAction = async () => {
     if (confSlackIncomingWebhookUrl) {
+        // https://api.slack.com/messaging/webhooks
+        // https://api.slack.com/tools/block-kit-builder
+        // https://api.slack.com/reference/block-kit/blocks
+        // https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets
         await sendSlackMessage({
             "blocks": [
                 {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: '*Deployment Status Notifier Slack*'
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": `Deployment of *<${payload.deployment.payload.web_url}>*`
                     }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": `*Status:* ${payload.deployment_status.state}`
+                    },
+                    "accessory": {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "View build log",
+                            "emoji": true
+                        },
+                        "style": "primary",
+                        "url": `${payload.deployment_status.target_url}`
+                    }
+                },
+                {
+                    "type": "context",
+                    "elements": [
+                        {
+                            "type": "mrkdwn",
+                            "text": `commit: <${payload.repository.html_url}/commit/${context.sha}|${context.sha.substr(0, 8)}>, actor: tiblu | <!date^${new Date(payload.deployment_status.created_at).getTime()}^{date_long_pretty} {time_secs}|${payload.deployment_status.created_at}>`
+                        }
+                    ]
                 }
             ]
         });
