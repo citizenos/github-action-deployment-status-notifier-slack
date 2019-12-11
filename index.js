@@ -57,7 +57,7 @@ const runAction = async () => {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": `*Repository*: <${payload.repository.html_url}|${payload.repository.full_name}\n*Status:* ${payload.deployment_status.state.toUpperCase()}>`
+                        "text": `*Repository*: <${payload.repository.html_url}|${payload.repository.full_name}>\n*Status:* ${payload.deployment_status.state.toUpperCase()}`
                     },
                     "accessory": {
                         "type": "button",
