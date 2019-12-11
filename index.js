@@ -1,5 +1,17 @@
 'use strict';
 
+/**
+ * GitHub Action for sending deployment status Slack notifications
+ * @type {exports|module.exports}
+ *
+ * @see https://developer.github.com/v3/activity/events/types/#deploymentstatusevent
+ * @see https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets
+ * @see https://api.slack.com/messaging/webhooks
+ * @see https://api.slack.com/tools/block-kit-builder
+ * @see https://api.slack.com/reference/block-kit/blocks
+ * @see https://api.slack.com/reference/block-kit/block-elements#button
+ */
+
 const core = require('@actions/core');
 const { context } = require('@actions/github');
 const superagent = require('superagent');
@@ -23,14 +35,9 @@ const sendSlackMessage = async (message) => {
 
 const runAction = async () => {
     if (confSlackIncomingWebhookUrl) {
-        // https://api.slack.com/messaging/webhooks
-        // https://api.slack.com/tools/block-kit-builder
-        // https://api.slack.com/reference/block-kit/blocks
-        // https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets
-
-
         var createdAtTimestamp = new Date(payload.deployment_status.created_at).getTime().toString().substr(0, 10); // Slack does not like full millisecond timestamp...
         var shaShort = payload.deployment.sha.substr(0, 8);
+        var buttonViewBuildLogStyle = ['success','pending'].includes(payload.deployment_status.state) ? 'primary' : 'danger'; // status:  primary, danger // https://api.slack.com/reference/block-kit/block-elements#button
 
         await sendSlackMessage({
             "blocks": [
@@ -45,7 +52,7 @@ const runAction = async () => {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": `*Status:* ${payload.deployment_status.state}`
+                        "text": `*Status:* ${payload.deployment_status.state.toUpperCase()}`
                     },
                     "accessory": {
                         "type": "button",
@@ -54,7 +61,7 @@ const runAction = async () => {
                             "text": "View build log",
                             "emoji": true
                         },
-                        "style": "primary",
+                        "style": `${buttonViewBuildLogStyle}`,
                         "url": `${payload.deployment_status.target_url}`
                     }
                 },
