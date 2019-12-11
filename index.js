@@ -9,7 +9,7 @@ core.debug(`GitHub Deployment Status Notifier Slack - Context ${context}`);
 const payload = context.payload;
 const confSlackIncomingWebhookUrl = core.getInput('slack-incoming-webhook-url');
 
-if (!context.eventName !== 'deployment_status') {
+if (context.eventName !== 'deployment_status') {
     throw new Error('INVALID CONFIGURATION: Invalid event type configuration, event must be "deployment_status". See: https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#deployment-status-event-deployment_status');
 }
 
