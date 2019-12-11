@@ -29,7 +29,7 @@ const runAction = async () => {
         // https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets
 
 
-        var createdAtTimestamp = new Date(payload.deployment_status.created_at).getTime();
+        var createdAtTimestamp = new Date(payload.deployment_status.created_at).getTime().toString().substr(0, 10); // Slack does not like full millisecond timestamp...
         var shaShort = payload.deployment.sha.substr(0, 8);
 
         await sendSlackMessage({
