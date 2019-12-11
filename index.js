@@ -27,6 +27,11 @@ const runAction = async () => {
         // https://api.slack.com/tools/block-kit-builder
         // https://api.slack.com/reference/block-kit/blocks
         // https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets
+
+
+        var createdAtTimestamp = new Date(payload.deployment_status.created_at).getTime();
+        var shaShort = payload.deployment.shaa.substr(0, 8);
+
         await sendSlackMessage({
             "blocks": [
                 {
@@ -58,7 +63,7 @@ const runAction = async () => {
                     "elements": [
                         {
                             "type": "mrkdwn",
-                            "text": `commit: <${payload.repository.html_url}/commit/${context.sha}|${context.sha.substr(0, 8)}>, actor: tiblu | <!date^${new Date(payload.deployment_status.created_at).getTime()}^{date_long_pretty} {time_secs}|${payload.deployment_status.created_at}>`
+                            "text": `commit: <${payload.repository.html_url}/commit/${payload.deployment.sha}|${shaShort}>, actor: ${context.actor} | <!date^${createdAtTimestamp}^{date_long_pretty} {time_secs}|${payload.deployment_status.created_at}>`
                         }
                     ]
                 }
