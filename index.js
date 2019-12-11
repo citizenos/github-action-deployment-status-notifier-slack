@@ -30,7 +30,7 @@ const runAction = async () => {
 
 
         var createdAtTimestamp = new Date(payload.deployment_status.created_at).getTime();
-        var shaShort = payload.deployment.shaa.substr(0, 8);
+        var shaShort = payload.deployment.sha.substr(0, 8);
 
         await sendSlackMessage({
             "blocks": [
