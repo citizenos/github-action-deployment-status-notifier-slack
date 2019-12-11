@@ -27,17 +27,19 @@ const sendSlackMessage = async (message) => {
 };
 
 const runAction = async () => {
-    await sendSlackMessage({
-        "blocks": [
-            {
-                type: 'section',
-                text: {
-                    type: 'mrkdwn',
-                    text: '*Deployment Status Notifier Slack*'
+    if (confSlackIncomingWebhookUrl) {
+        await sendSlackMessage({
+            "blocks": [
+                {
+                    type: 'section',
+                    text: {
+                        type: 'mrkdwn',
+                        text: '*Deployment Status Notifier Slack*'
+                    }
                 }
-            }
-        ]
-    });
+            ]
+        });
+    }
 };
 
 runAction()
