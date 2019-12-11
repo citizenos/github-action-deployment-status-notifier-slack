@@ -21,6 +21,7 @@ jobs:
       with:
         slack-incoming-webhook-url: ${{secrets.SLACK_INCOMING_WEBHOOK_URL}}
 ```
+* Push changes and deploy to verify configuration.
 
 **NOTE:** 
 
