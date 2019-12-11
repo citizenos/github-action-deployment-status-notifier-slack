@@ -7,6 +7,7 @@
  * @see https://developer.github.com/v3/activity/events/types/#deploymentstatusevent
  * @see https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets
  * @see https://api.slack.com/messaging/webhooks
+ * @see https://slack.com/intl/en-ee/help/articles/115005265063-Incoming-WebHooks-for-Slack
  * @see https://api.slack.com/tools/block-kit-builder
  * @see https://api.slack.com/reference/block-kit/blocks
  * @see https://api.slack.com/reference/block-kit/block-elements#button
@@ -23,6 +24,10 @@ const confSlackIncomingWebhookUrl = core.getInput('slack-incoming-webhook-url');
 
 if (context.eventName !== 'deployment_status') {
     throw new Error('INVALID CONFIGURATION: Invalid event type configuration, event must be "deployment_status". See: https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#deployment-status-event-deployment_status');
+}
+
+if (!confSlackIncomingWebhookUrl) {
+    throw new Error('INVALID CONFIGURATION: Missing Slack Incoming webhook configuration. To obdain incoming webhook url see https://slack.com/intl/en-ee/help/articles/115005265063-Incoming-WebHooks-for-Slack. To set up GitHub secrets see https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets');
 }
 
 core.debug(`GitHub Deployment Status Notifier Slack - event context ${JSON.stringify(context, null, 2)}`);
